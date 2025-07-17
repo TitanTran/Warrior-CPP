@@ -5,12 +5,14 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "Interfaces/PawnCombatInterface.h"
+#include "GenericTeamAgentInterface.h"
 
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
-{   
+{
 	check(InActor);
 
-	return CastChecked<UWarriorAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
+	return CastChecked<UWarriorAbilitySystemComponent>(
+		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
 }
 
 void UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(AActor* InActor, FGameplayTag TagToAdd)
@@ -40,9 +42,10 @@ bool UWarriorFunctionLibrary::NativeDoesActorHaveTag(AActor* InActor, FGameplayT
 	return ASC->HasMatchingGameplayTag(TagToCheck);
 }
 
-void UWarriorFunctionLibrary::BP_DoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck, EWarriorConfirmType& OutConfirmType)
+void UWarriorFunctionLibrary::BP_DoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck,
+                                                  EWarriorConfirmType& OutConfirmType)
 {
-	OutConfirmType = NativeDoesActorHaveTag(InActor,TagToCheck)? EWarriorConfirmType::Yes : EWarriorConfirmType::No;
+	OutConfirmType = NativeDoesActorHaveTag(InActor, TagToCheck) ? EWarriorConfirmType::Yes : EWarriorConfirmType::No;
 }
 
 UPawnCombatComponent* UWarriorFunctionLibrary::NativeGetPawnCombatComponentFromActor(AActor* InActor)
@@ -58,11 +61,26 @@ UPawnCombatComponent* UWarriorFunctionLibrary::NativeGetPawnCombatComponentFromA
 }
 
 UPawnCombatComponent* UWarriorFunctionLibrary::BP_GetPawnCombatComponentFromActor(AActor* InActor,
-                                                                                  EWarriorValidType& OutValidType)
+	EWarriorValidType& OutValidType)
 {
 	UPawnCombatComponent* CombatComponent = NativeGetPawnCombatComponentFromActor(InActor);
 
-	OutValidType = CombatComponent? EWarriorValidType::Valid : EWarriorValidType::Invalid;
+	OutValidType = CombatComponent ? EWarriorValidType::Valid : EWarriorValidType::Invalid;
 
 	return CombatComponent;
+}
+
+bool UWarriorFunctionLibrary::IsTargetPawnHostile(APawn* QueryPawn, APawn* TargetPawn)
+{
+	check(QueryPawn && TargetPawn);
+
+	IGenericTeamAgentInterface* QueryTeamAgent = Cast<IGenericTeamAgentInterface>(QueryPawn->GetController());
+	IGenericTeamAgentInterface* TargetTeamAgent = Cast<IGenericTeamAgentInterface>(TargetPawn->GetController());
+
+	if (QueryTeamAgent && TargetTeamAgent)
+	{
+		return QueryTeamAgent->GetGenericTeamId() != TargetTeamAgent->GetGenericTeamId();
+	}
+
+	return false;
 }

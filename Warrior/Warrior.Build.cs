@@ -7,22 +7,28 @@ public class Warrior : ModuleRules
 	public Warrior(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { 
+
+		// ReSharper disable once UseCollectionExpression
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
 			"Core",
 			"CoreUObject",
 			"Engine",
 			"InputCore",
-            "GameplayTags",
-            "GameplayAbilities",
-            "EnhancedInput",
-			"GameplayTasks"});
+			"GameplayTags",
+			"GameplayAbilities",
+			"EnhancedInput",
+			"GameplayTasks",
+			"AnimGraphRuntime",
+			"MotionWarping"
+		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		// ReSharper disable once UseCollectionExpression
+		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-		
+
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 
