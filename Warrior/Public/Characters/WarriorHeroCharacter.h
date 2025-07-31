@@ -71,6 +71,11 @@ protected:
 	void Input_AbilityInputPressed(FGameplayTag InInputTag);
 	void Input_AbilityInputReleased(FGameplayTag InInputTag);
 
+	FVector2D SwitchDirection = FVector2D::ZeroVector;
+
+	void Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue);
+	void Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue);
+
 #pragma endregion
 
 public:

@@ -13,7 +13,7 @@ AWarriorHeroCharacter* UWarriorHeroGameplayAbility::GetHeroCharacterFromActorInf
 		CachedWarriorHeroCharacter = Cast<AWarriorHeroCharacter>(CurrentActorInfo->AvatarActor);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("CachedWarriorHeroCharacter: %s"), *CachedWarriorHeroCharacter->GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("CachedWarriorHeroCharacter: %s"), *CachedWarriorHeroCharacter->GetName());
 	return CachedWarriorHeroCharacter.IsValid() ? CachedWarriorHeroCharacter.Get() : nullptr;
 }
 

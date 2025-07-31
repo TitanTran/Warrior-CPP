@@ -14,6 +14,7 @@
 #include "DataAssets/StartUpData/DataAsset_HeroStartUpData.h"
 #include "Components/Combat/HeroCombatComponent.h"
 #include "Components/UI/HeroUIComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -22,7 +23,7 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 	GetCapsuleComponent()->SetCapsuleSize(42.f, 96.f); // Set the capsule size
 
 	// Don't rotate character with controller
-	bUseControllerRotationPitch = false;  // The character's pitch is not tied to the controller's rotation.
+	bUseControllerRotationPitch = false; // The character's pitch is not tied to the controller's rotation.
 	bUseControllerRotationYaw = false; // The character's yaw is not directly tied to the controller's rotation.
 	bUseControllerRotationRoll = false; // The character's roll is not tied to the controller's rotation.
 
@@ -81,18 +82,29 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 {
 	ULocalPlayer* LocalPlayer = GetController<APlayerController>()->GetLocalPlayer();
 
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
+		UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
 
 	check(Subsystem);
 
 	Subsystem->AddMappingContext(InputConfigDataAsset->DefaultMappingContext, 0);
-	
+
 	UWarriorInputComponent* WarriorInputComponent = CastChecked<UWarriorInputComponent>(PlayerInputComponent);
 
-	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
-	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_Look, ETriggerEvent::Triggered, this, &ThisClass::Input_Look);
+	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_Move,
+	                                             ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
+	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_Look,
+	                                             ETriggerEvent::Triggered, this, &ThisClass::Input_Look);
 
-	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::Input_AbilityInputPressed, &ThisClass::Input_AbilityInputReleased);
+	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::Input_AbilityInputPressed,
+	                                              &ThisClass::Input_AbilityInputReleased);
+
+	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_SwitchTarget,
+	                                             ETriggerEvent::Triggered, this,
+	                                             &ThisClass::Input_SwitchTargetTriggered);
+	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_SwitchTarget,
+	                                             ETriggerEvent::Completed, this,
+	                                             &ThisClass::Input_SwitchTargetCompleted);
 }
 
 void AWarriorHeroCharacter::BeginPlay()
@@ -144,4 +156,20 @@ void AWarriorHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)
 void AWarriorHeroCharacter::Input_AbilityInputReleased(FGameplayTag InInputTag)
 {
 	WarriorAbilitySystemComponent->OnAbilityInputReleased(InInputTag);
+}
+
+void AWarriorHeroCharacter::Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue)
+{
+	SwitchDirection = InputActionValue.Get<FVector2D>();
+}
+
+void AWarriorHeroCharacter::Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue)
+{
+	FGameplayEventData Data;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		this,
+		SwitchDirection.X>0.f? WarriorGameplayTags::Player_Event_SwitchTarget_Right : WarriorGameplayTags::Player_Event_SwitchTarget_Left,
+		Data
+	);
 }
