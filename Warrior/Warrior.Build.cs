@@ -20,11 +20,9 @@ public class Warrior : ModuleRules
 			"EnhancedInput",
 			"GameplayTasks",
 			"AnimGraphRuntime",
-			"MotionWarping"
+			"MotionWarping",
+			"Niagara"
 		});
-
-		// ReSharper disable once UseCollectionExpression
-		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

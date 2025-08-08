@@ -22,7 +22,8 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 
 	const bool bIsPlayerBlocking = UWarriorFunctionLibrary::NativeDoesActorHaveTag(
 		HitActor, WarriorGameplayTags::Player_Status_Blocking);
-	const bool bIsMyAttackUnblockable = false;
+	const bool bIsMyAttackUnblockable = UWarriorFunctionLibrary::NativeDoesActorHaveTag(
+		GetOwningPawn(), WarriorGameplayTags::Enemy_Status_Unblockable);
 
 	if (bIsPlayerBlocking && !bIsMyAttackUnblockable)
 	{
