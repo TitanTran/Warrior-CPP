@@ -21,7 +21,8 @@ public class Warrior : ModuleRules
 			"GameplayTasks",
 			"AnimGraphRuntime",
 			"MotionWarping",
-			"Niagara"
+			"Niagara",
+			"NavigationSystem"
 		});
 
 		// Uncomment if you are using Slate UI
