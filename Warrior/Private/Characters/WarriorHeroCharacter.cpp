@@ -93,18 +93,24 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_Move,
 	                                             ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
+	
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_Look,
 	                                             ETriggerEvent::Triggered, this, &ThisClass::Input_Look);
 
-	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::Input_AbilityInputPressed,
-	                                              &ThisClass::Input_AbilityInputReleased);
 
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_SwitchTarget,
 	                                             ETriggerEvent::Triggered, this,
 	                                             &ThisClass::Input_SwitchTargetTriggered);
+	
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_SwitchTarget,
 	                                             ETriggerEvent::Completed, this,
 	                                             &ThisClass::Input_SwitchTargetCompleted);
+	
+	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset, WarriorGameplayTags::InputTag_PickUp_Stones,
+	                                             ETriggerEvent::Started, this, &ThisClass::Input_PickUpStonesStarted);
+	
+	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset, this, &ThisClass::Input_AbilityInputPressed,
+	                                              &ThisClass::Input_AbilityInputReleased);
 }
 
 void AWarriorHeroCharacter::BeginPlay()
@@ -158,6 +164,17 @@ void AWarriorHeroCharacter::Input_AbilityInputReleased(FGameplayTag InInputTag)
 	WarriorAbilitySystemComponent->OnAbilityInputReleased(InInputTag);
 }
 
+void AWarriorHeroCharacter::Input_PickUpStonesStarted(const FInputActionValue& InputActionValue)
+{
+	FGameplayEventData Data;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		this,
+		WarriorGameplayTags::Player_Event_ConsumeStones,
+		Data
+	);
+}
+
 void AWarriorHeroCharacter::Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue)
 {
 	SwitchDirection = InputActionValue.Get<FVector2D>();
@@ -169,7 +186,9 @@ void AWarriorHeroCharacter::Input_SwitchTargetCompleted(const FInputActionValue&
 
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 		this,
-		SwitchDirection.X>0.f? WarriorGameplayTags::Player_Event_SwitchTarget_Right : WarriorGameplayTags::Player_Event_SwitchTarget_Left,
+		SwitchDirection.X > 0.f
+			? WarriorGameplayTags::Player_Event_SwitchTarget_Right
+			: WarriorGameplayTags::Player_Event_SwitchTarget_Left,
 		Data
 	);
 }

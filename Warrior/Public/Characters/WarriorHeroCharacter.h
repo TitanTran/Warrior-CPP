@@ -55,15 +55,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UHeroCombatComponent* HeroCombatComponent;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	UHeroUIComponent* HeroUIComponent;
 #pragma endregion
 
 #pragma region Inputs
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterData", meta = (AllowAbstract = "true"))
 	UDataAsset_InputConfig* InputConfigDataAsset;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
-	UHeroUIComponent* HeroUIComponent;
+	
+	UPROPERTY()
+	FVector2D SwitchDirection = FVector2D::ZeroVector;
 
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_Look(const FInputActionValue& InputActionValue);
@@ -71,7 +73,7 @@ protected:
 	void Input_AbilityInputPressed(FGameplayTag InInputTag);
 	void Input_AbilityInputReleased(FGameplayTag InInputTag);
 
-	FVector2D SwitchDirection = FVector2D::ZeroVector;
+	void Input_PickUpStonesStarted(const FInputActionValue& InputActionValue);
 
 	void Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue);
 	void Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue);
